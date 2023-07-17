@@ -65,7 +65,7 @@ const TodoPage = (): JSX.Element => {
     <div>
       <div className="w-full h-15rem bg-[#f0ede9] m-auto p-4">
         <h1 className="text-black-500 text-center py-[2rem] font-[600] text-[2rem]">
-          Not taking app
+          Todo app
         </h1>
         <div className="flex flex-col w-[30%] m-auto mb-4">
           <input
@@ -106,7 +106,6 @@ const TodoPage = (): JSX.Element => {
                   type="text"
                   name="title"
                   placeholder="Title"
-                  // value={newTodo.title}
                   onChange={handleInputChange}
                 />
 
@@ -115,10 +114,12 @@ const TodoPage = (): JSX.Element => {
                   type="text"
                   name="description"
                   placeholder="Description"
-                  // value={newTodo.description}
                   onChange={handleInputChange}
                 />
-                <button onClick={() => handleSubmitUpdate(todo.id)}>
+                <button
+                  className="text-black border-[1px] border-[#000] mx-[0.2rem] hover:bg-black hover:text-white py-2 px-4 rounded transition-colors duration-300"
+                  onClick={() => handleSubmitUpdate(todo.id)}
+                >
                   Update
                 </button>
               </div>
