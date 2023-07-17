@@ -1,15 +1,29 @@
 "use client";
 import { observer } from "mobx-react";
-import { useEffect, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 import todoStore, { Todo, TodoStatus } from "./Todostore";
 
 const TodoPage = (): JSX.Element => {
   const [newTodoTitle, setNewTodoTitle] = useState<string>("");
   const [newTodoDescription, setNewTodoDescription] = useState<string>("");
+  const [toggleInput, setToggleInput] = useState<boolean>(false);
 
-  const handleAddTodo = (): void => {
+  const [newTodo, setNewTodo] = useState<{
+    title: string;
+    description: string;
+  }>({ title: "", description: "" });
+
+  const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setNewTodo((prevTodo) => ({
+      ...prevTodo,
+      [name]: value,
+    }));
+  };
+  const handleAddTodo = (id: any): void => {
     if (newTodoTitle.trim() && newTodoDescription.trim()) {
       todoStore.addTodo({
+        id: id,
         title: newTodoTitle,
         description: newTodoDescription,
         status: TodoStatus.ToDo,
@@ -27,20 +41,25 @@ const TodoPage = (): JSX.Element => {
     todoStore.toggleTodoStatus(id);
   };
 
-  const handleEditTodo = (
-    id: number,
-    updatedTitle: string,
-    updatedDescription: string
-  ): void => {
-    todoStore.editTodo(id, updatedTitle, updatedDescription);
-  };
-
   useEffect(() => {
     return () => {
       todoStore.todos = [];
       todoStore.nextId = 1;
     };
   }, []);
+
+  const handleSubmitUpdate = (id: any): void => {
+    todoStore.addTodo({
+      id: id,
+      title: newTodo.title,
+      description: newTodo.description,
+      status: TodoStatus.ToDo,
+    });
+  };
+
+  const handleToggleState = (): void => {
+    setToggleInput(!toggleInput);
+  };
 
   return (
     <div>
@@ -80,6 +99,30 @@ const TodoPage = (): JSX.Element => {
             <h3 className="mb-2 font-bold">{todo.title}</h3>
             <p className="mb-2">{todo.description}</p>
             <p className="mb-2">Status: {todo.status}</p>
+            {toggleInput ? (
+              <div>
+                <input
+                  className="px-[1rem] py-[0.4rem] "
+                  type="text"
+                  name="title"
+                  placeholder="Title"
+                  // value={newTodo.title}
+                  onChange={handleInputChange}
+                />
+
+                <input
+                  className="my-[1rem] px-[1rem] py-[0.4rem]"
+                  type="text"
+                  name="description"
+                  placeholder="Description"
+                  // value={newTodo.description}
+                  onChange={handleInputChange}
+                />
+                <button onClick={() => handleSubmitUpdate(todo.id)}>
+                  Update
+                </button>
+              </div>
+            ) : null}
             <button
               className="text-black border-[1px] border-[#000] mx-[0.2rem] hover:bg-black hover:text-white py-2 px-4 rounded transition-colors duration-300"
               onClick={() => handleToggleTodo(todo.id)}
@@ -94,13 +137,7 @@ const TodoPage = (): JSX.Element => {
             </button>
             <button
               className="text-black border-[1px] border-[#000] mx-[0.2rem] hover:bg-black hover:text-white py-2 px-4 rounded transition-colors duration-300"
-              onClick={() =>
-                handleEditTodo(
-                  todo.id,
-                  `${todo.title} (edited)`,
-                  `${todo.description} (edited)`
-                )
-              }
+              onClick={handleToggleState}
             >
               Edit
             </button>
