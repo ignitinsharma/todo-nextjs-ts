@@ -19,17 +19,17 @@ class TodoStore {
 
   constructor() {
     makeAutoObservable(this);
-    this.loadTodosFromLocalStorage(); // Load todos from local storage on store initialization
+    this.loadTodosFromLocalStorage();
   }
 
   addTodo = (todo: Todo): void => {
     this.todos.push({ ...todo, id: this.nextId++ });
-    this.saveTodosToLocalStorage(); // Save todos to local storage after adding a new todo
+    this.saveTodosToLocalStorage();
   };
 
   deleteTodo = (id: number): void => {
     this.todos = this.todos.filter((todo) => todo.id !== id);
-    this.saveTodosToLocalStorage(); // Save todos to local storage after deleting a todo
+    this.saveTodosToLocalStorage();
   };
 
   toggleTodoStatus = (id: number): void => {
@@ -62,15 +62,19 @@ class TodoStore {
   };
 
   saveTodosToLocalStorage = (): void => {
-    localStorage.setItem("todos", JSON.stringify(this.todos));
+    if (typeof window !== "undefined") {
+      localStorage.setItem("todos", JSON.stringify(this.todos));
+    }
   };
 
   loadTodosFromLocalStorage = (): void => {
-    const storedTodos = localStorage.getItem("todos");
-    if (storedTodos) {
-      this.todos = JSON.parse(storedTodos);
-      this.nextId =
-        this.todos.length > 0 ? this.todos[this.todos.length - 1].id + 1 : 1;
+    if (typeof window !== "undefined") {
+      const storedTodos = localStorage.getItem("todos");
+      if (storedTodos) {
+        this.todos = JSON.parse(storedTodos);
+        this.nextId =
+          this.todos.length > 0 ? this.todos[this.todos.length - 1].id + 1 : 1;
+      }
     }
   };
 }
